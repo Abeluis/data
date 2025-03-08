@@ -7,22 +7,22 @@ pacman::p_load(dplyr, tidyverse)
 
 # 2 Cargar archivos #### 
 fileUrl <- "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
-download.file(fileUrl, destfile = "Dataset.zip")
+download.file(fileUrl, destfile = "data/Dataset.zip")
 
 # Descomprimir 
-unzip(zipfile = "Dataset.zip", exdir = "data")
+unzip(zipfile = "data/Dataset.zip", exdir = "data")
 
 # Archivos 
-features <- read.table(file = "UCI HAR Dataset/features.txt") %>% 
+features <- read.table(file = "data/UCI HAR Dataset/features.txt") %>% 
   pull(2) %>% 
   as.character()
 
 ## 2.1 Procesar Train ####
 # Vector con nombre 
-activity_name <- c("Id", "Actividades")
+activity_name <- c("N", "Actividades")
   
 # df con actividades 
-activity <- read.table(file = "UCI HAR Dataset/activity_labels.txt") %>% 
+activity <- read.table(file = "data/UCI HAR Dataset/activity_labels.txt") %>% 
   set_names(activity_name)
 
 # Renombrar actividades 
@@ -37,41 +37,41 @@ activity <- activity %>%
     Actividades == "LAYING" ~ "Estar acostado"
   ))
  
-# df con train x 
-x_train <- read.table(file = "UCI HAR Dataset/train/X_train.txt") %>% 
+# df con features
+train_features <- read.table(file = "data/UCI HAR Dataset/train/X_train.txt") %>% 
   setNames(nm = features)
 
-# df con train y, solo id de actividades
-y_train <- read.table(file = "UCI HAR Dataset/train/y_train.txt") %>%
-  rename("Id" = 1) 
-
-# df con train y con id + nombre de actividades
-y_train <- y_train %>% 
-  right_join(activity, y_train, by = "Id")
- 
-# bind entre y_train y x_train 
-train <- cbind(y_train, x_train)
-
-## 2.2 Procesar Test #### 
-x_test <- read.table(file = "UCI HAR Dataset/test/X_test.txt") %>% 
+test_features <- read.table(file = "data/UCI HAR Dataset/test/X_test.txt") %>% 
   setNames(nm = features)
 
-y_test <- read.table(file = "UCI HAR Dataset/test/Y_test.txt") %>%
-  rename("Id" = 1) 
+data_features <- rbind(train_features, test_features)
 
-# df con train y con id + nombre de actividades
-y_test<- y_test %>% 
-  right_join(activity, y_test, by = "Id")
+# df con activity 
+train_activity <- read.table(file = "data/UCI HAR Dataset/train/y_train.txt") %>%
+  rename("N" = 1) 
 
-# bind entre y_test y x_test
-test <- cbind(y_test, x_test)
+test_activity <- read.table(file = "data/UCI HAR Dataset/test/Y_test.txt") %>%
+  rename("N" = 1) 
 
-# Union entre train y test  
-union <- rbind(train, test)
+data_activity <- rbind(train_activity, test_activity)
+
+data_activity <- inner_join(data_activity, activity, by = "N")
+
+# df con subject 
+
+train_subject <- read.table(file = "data/UCI HAR Dataset/train/subject_train.txt") %>% 
+  rename("ID" = 1)
+
+test_subject <- read.table(file = "data/UCI HAR Dataset/test/subject_test.txt") %>% 
+  rename("ID" = 1)
+
+data_subject <- rbind(train_subject, test_subject)
+
+data <- cbind(data_subject, data_activity, data_features)
 
 # 3 Media y desviacion estandar #### 
-extraer <- union %>%
-  select(matches("Id|Actividades|Mean|Std", ignore.case = TRUE))
+extraer <- data %>%
+  select(ID, N, Actividades, matches("Mean|Std", ignore.case = TRUE))
 
 # 4 Renombrar variables
 extraer <- extraer %>%
@@ -91,16 +91,19 @@ extraer <- extraer %>%
     . <- gsub("^t", "Tiempo_", .)
     . <- gsub("^f", "Frecuencia_", .)
     . <- gsub("-mean()", "Promedio_", .)
-    
     gsub("BodyBody", "Cuerpo_",  .)
   })
 
- 
 # 5 Promedios y guardar datos #### 
-promedios <- extraer %>% 
-  mutate(Id = as.factor(Id)) %>% 
-  aggregate(. ~ Id + Actividades, data = ., FUN = mean) %>% 
-  arrange(Id)
+promedios <- extraer %>%
+  mutate(
+    ID = as.factor(ID),
+    N = as.factor(N)) %>% 
+  group_by(ID, N, Actividades) %>% 
+  summarize(across(everything(), mean, na.rm = TRUE), .groups = "keep") %>% 
+  ungroup()
 
-# Guardar 
-write.table(promedios, file = "Promedios.txt", row.names = FALSE)
+# Guardar
+write.table(promedios, file = "data/Tidy.txt", row.names = FALSE)
+
+ 
