@@ -7,13 +7,13 @@ pacman::p_load(dplyr, tidyverse)
 
 # 2 Cargar archivos #### 
 fileUrl <- "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
-download.file(fileUrl, destfile = "data/Dataset.zip")
+download.file(fileUrl, destfile = "Dataset.zip")
 
 # Descomprimir 
-unzip(zipfile = "data/Dataset.zip", exdir = "data")
+unzip(zipfile = "Dataset.zip", exdir = "data")
 
 # Archivos 
-features <- read.table(file = "data/UCI HAR Dataset/features.txt") %>% 
+features <- read.table(file = "UCI HAR Dataset/features.txt") %>% 
   pull(2) %>% 
   as.character()
 
@@ -22,7 +22,7 @@ features <- read.table(file = "data/UCI HAR Dataset/features.txt") %>%
 activity_name <- c("Id", "Actividades")
   
 # df con actividades 
-activity <- read.table(file = "data/UCI HAR Dataset/activity_labels.txt") %>% 
+activity <- read.table(file = "UCI HAR Dataset/activity_labels.txt") %>% 
   set_names(activity_name)
 
 # Renombrar actividades 
@@ -38,11 +38,11 @@ activity <- activity %>%
   ))
  
 # df con train x 
-x_train <- read.table(file = "data/UCI HAR Dataset/train/X_train.txt") %>% 
+x_train <- read.table(file = "UCI HAR Dataset/train/X_train.txt") %>% 
   setNames(nm = features)
 
 # df con train y, solo id de actividades
-y_train <- read.table(file = "data/UCI HAR Dataset/train/y_train.txt") %>%
+y_train <- read.table(file = "UCI HAR Dataset/train/y_train.txt") %>%
   rename("Id" = 1) 
 
 # df con train y con id + nombre de actividades
@@ -53,10 +53,10 @@ y_train <- y_train %>%
 train <- cbind(y_train, x_train)
 
 ## 2.2 Procesar Test #### 
-x_test <- read.table(file = "data/UCI HAR Dataset/test/X_test.txt") %>% 
+x_test <- read.table(file = "UCI HAR Dataset/test/X_test.txt") %>% 
   setNames(nm = features)
 
-y_test <- read.table(file = "data/UCI HAR Dataset/test/Y_test.txt") %>%
+y_test <- read.table(file = "UCI HAR Dataset/test/Y_test.txt") %>%
   rename("Id" = 1) 
 
 # df con train y con id + nombre de actividades
@@ -103,4 +103,4 @@ promedios <- extraer %>%
   arrange(Id)
 
  
-write.table(promedios, file = "data/Tidy.txt", row.names = FALSE)
+write.table(promedios, file = "Promedios.txt", row.names = FALSE)
