@@ -23,14 +23,16 @@ The data files used are the next
 
 # Data transformations
 
-1. El archivo features.txt es cargado y se extraen sus valores para ser cargados como un vector con el nombre de las columnas.
-2. El archivo activity_labels.txt es es cargaado y sus valores categoricos son traducidos al español.
-3. Los archivos X_test.txt y X_train.txt son cargados y unidos con rbind.
-4. Los archivos Y_test.txt e Y_test.txt son cargados y unidos con rbind.
-5. Los archivos subject_test.txt y subject_train.txt son cargados y unidos con rbind.
-6. Se hace un inner_join entre el dataframe que contiene las activity_labels.txt traducidas, con los anteriores archivos de test.
-7. Se hace un cbind entre los subjects, activities, and the datarecorded. 
-8. Se extraen las columnas de identificacion, ID, Activity Number and Activity name, también la media y desviación estandar. 
-9. Se renombrar las variables. 
-10. Se agrupa por columnas de identificación y se promedian todas las otras variables.
-11. Se guardan los datos. 
+1. The features.txt file is loaded and its values are extracted to be loaded as a vector with the name of the columns.
+2. The activity_labels.txt file is loaded and its categorical values are translated into English.
+3. The files X_test.txt and X_train.txt are loaded and joined with rbind.
+4. The files Y_test.txt and Y_test.txt are loaded and merged with rbind.
+5. The files subject_test.txt and subject_train.txt are loaded and linked with rbind.
+6. The dataframe containing the translated activity_labels.txt is inner_joined with the previous test files.
+7. A cbind is made between the subjects, activities, and the datarecorded. 
+8. Extract the identification columns, ID, Activity Number and Activity name, as well as the mean and standard deviation. 
+9. Rename the variables. 
+10. Group by ID columns and average all other variables.
+11. Save the data. 
+
+ 
