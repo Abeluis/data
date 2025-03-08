@@ -102,5 +102,5 @@ promedios <- extraer %>%
   aggregate(. ~ Id + Actividades, data = ., FUN = mean) %>% 
   arrange(Id)
 
- 
+# Guardar 
 write.table(promedios, file = "Promedios.txt", row.names = FALSE)
